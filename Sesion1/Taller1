@@ -1,0 +1,20 @@
+import numpy as np
+
+# 1. Matriz de prueba 5x5 simulando sobreexposición
+np.random.seed(42)  # Semilla opcional para reproducibilidad
+original = np.random.randint(200, 255, (5, 5)).astype(np.float32)
+
+# 2. Transformación lineal afín: A_nueva = alpha * A + beta
+alpha = 0.5   # Reducción de contraste del 50%
+beta = -50.0  # Disminución de brillo en 50 unidades
+procesada = (alpha * original) + beta
+
+# 3. Saturación (Clipping) y conversión a uint8
+procesada = np.clip(procesada, 0, 255).astype(np.uint8)
+original_uint8 = original.astype(np.uint8)
+
+# 4. Resultados
+print("--- MATRIZ ORIGINAL (Sobreexpuesta) ---")
+print(original_uint8)
+print("\n--- MATRIZ PROCESADA ---")
+print(procesada)
