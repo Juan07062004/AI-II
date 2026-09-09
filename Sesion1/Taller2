@@ -1,0 +1,26 @@
+import numpy as np
+
+# 1. Definición de la sección de imagen (I) y el Kernel (K)
+I = np.array([
+    [100, 100, 100],
+    [100, 200, 100],
+    [100, 100, 100]
+], dtype=np.float32)
+
+K = np.array([
+    [ 0, -1,  0],
+    [-1,  5, -1],
+    [ 0, -1,  0]
+], dtype=np.float32)
+
+# 2. Producto Hadamard (elemento a elemento) y suma total
+hadamard = I * K
+pixel_central = np.sum(hadamard)
+
+# Acotamiento opcional para imagen en rango [0, 255]
+pixel_final = np.clip(pixel_central, 0, 255).astype(np.uint8)
+
+# 3. Visualización de los pasos
+print("Producto Hadamard (I * K):\n", hadamard)
+print(f"\nValor numérico resultante: {pixel_central:.1f}")
+print(f"Píxel central acotado (uint8): {pixel_final}")
