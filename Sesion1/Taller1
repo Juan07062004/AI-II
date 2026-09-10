@@ -1,3 +1,14 @@
+TALLER ANALITICO 1
+
+1. El valor tomado seria 0, teniendo en cuenta que la matriz en su primera poscición inicia en (0,0)
+
+2. 
+
+
+
+
+//----------------------------------------------------------------------------------
+
 import numpy as np
 
 # 1. Matriz de prueba 5x5 simulando sobreexposición
