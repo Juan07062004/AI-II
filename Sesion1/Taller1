@@ -2,12 +2,14 @@ TALLER ANALITICO 1
 
 1. El valor tomado seria 0, teniendo en cuenta que la matriz en su primera poscición inicia en (0,0)
 
-2. 
-
-
+2. El calculo de total de pixeles: 1080 * 1920 = 2'073.600
+Cada píxel espacial posee 3 componentes independientes (Rojo, Verde y Azul): 2'073.600 * 3 = 6'220.800 bytes
 
 
 //----------------------------------------------------------------------------------
+
+TALLER DE LABORATORIO
+
 
 import numpy as np
 
