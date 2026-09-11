@@ -1,3 +1,13 @@
+TALLER ANALITICO
+
+1. I(4x4) Operacionalmente, el elemento en la posición (i, j) de la transpuesta se define como (A^T){i,j} = A_{j,i}.
+
+2. (200, 200, 3): Demostración de por qué la capa de entrada de la red densa requiere exactamente 120.000 neuronas.
+
+//----------------------------------
+TALLER DE LABORATORIO
+
+
 import numpy as np
 
 # 1. Definición de la sección de imagen (I) y el Kernel (K)
