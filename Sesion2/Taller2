@@ -1,13 +1,15 @@
 # ============================================================
 # SESION 2 - TENSOR DE COLOR Y ANALISIS ESTADISTICO - SOLUCION
 # ============================================================
+//------------------------------------------------------------
+# ------------------------------------------------------------
+# TALLER LABORATORIO 2 - Analisis estadistico (histogramas)
+# ------------------------------------------------------------
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-# ------------------------------------------------------------
-# TALLER LABORATORIO 2 - Analisis estadistico (histogramas)
-# ------------------------------------------------------------
+
 # 1. Cargar imagen RGB
 imagen = cv2.imread('foto_demo.jpg')
 
