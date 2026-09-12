@@ -1,13 +1,27 @@
 # ============================================================
 # SESION 2 - TENSOR DE COLOR Y ANALISIS ESTADISTICO - SOLUCION
 # ============================================================
+TALLER ANALITICO 1
+
+1. Las dimensiones exactas de la variable de recorte (shape) es n recorte cuadrado de 100 x 100 píxeles ubicado entre las filas 100 y 199, y columnas 300 y 399.
+Eje 0 (Filas / Altura): 100:200 -> 200 - 100 = 100 píxeles de alto. 
+Eje 1 (Columnas / Anchura): 300:400 -> 400 - 300 = 100 píxeles de ancho.  
+Eje 2 (Canales): Al especificar el índice fijo 1 (sin rango con dos puntos), se extrae una única capa plana bidimensional. 
+
+2. Si se meten dos ciclos for anidados para recorrer una imagen (por ejemplo, de 2 millones de píxeles), el intérprete tiene que pausar, 
+revisar el tipo de dato, verificar índices y mover punteros dos millones de veces. 
+En el hardware, esto hace que los datos de la imagen estén saltando de forma dispersa, 
+provocando lo que se llama fallos de caché (Cache Misses): la CPU pierde tiempo esperando a que la memoria RAM le traiga cada dato suelto.
+
+//------------------------------------------------------------
+# ------------------------------------------------------------
+# TALLER LABORATORIO 1 - Conversion a escala de grises
+# ------------------------------------------------------------
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-# ------------------------------------------------------------
-# TALLER LABORATORIO 1 - Conversion a escala de grises
-# ------------------------------------------------------------
+
 # 1. Pixel amarillo intenso en formato BGR (Azul=0, Verde=255, Rojo=255)
 pixel = np.array([0, 255, 255], dtype=np.uint8)
 
