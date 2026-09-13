@@ -1,1 +1,80 @@
+TALLER ANALITICO
+1. Fila 0: 10 + 20 + 30 = 60
+Fila 1: 15 + 250 + 15 = 280
+Fila 2: 20 + 10 + 20 = 50
+Suma total = 60 + 280 + 50 = 390
 
+Nuevo valor = 390/9 = 130/3 = 43.33 -> Aprox. = 43
+
+Reducción drástica de la anomalía: El píxel central original tenía una intensidad de 250 (casi blanco puro) rodeado de un entorno oscuro cuyos valores oscilan
+entre 10 y 30. Tras aplicar el filtro, el valor colapsó a 43.33 (un tono gris oscuro). 
+Mecanismo de difuminado: Se dice que el filtro de media difumina o suaviza porque distribuye el valor del píxel atípico entre todos sus vecinos.
+Al promediar sin ponderación, aplana las transiciones bruscas de intensidad, eliminando picos agudos pero arrastrando el fondo hacia un tono intermedio homogéneo.
+
+
+//-----------------
+TALLER DE LAABORATORIO
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Cargar imagen base o generar una sintética con degradado
+ruta = 'imagen_base.jpg'
+imagen = cv2.imread(ruta, cv2.IMREAD_GRAYSCALE)
+
+if imagen is None:
+    # Imagen sintética 300x300 con un cuadro central definido
+    imagen = np.full((300, 300), 50, dtype=np.uint8)
+    imagen[80:220, 80:220] = 200
+
+# Añadir ruido impulsivo severo (Sal y Pimienta)
+np.random.seed(42)
+probabilidad_ruido = 0.08
+imagen_ruidosa = np.copy(imagen)
+
+# Ruido de Sal (píxeles blancos = 255)
+mascara_sal = np.random.rand(*imagen.shape) < (probabilidad_ruido / 2)
+imagen_ruidosa[mascara_sal] = 255
+
+# Ruido de Pimienta (píxeles negros = 0)
+mascara_pimienta = np.random.rand(*imagen.shape) < (probabilidad_ruido / 2)
+imagen_ruidosa[mascara_pimienta] = 0
+
+# 2. Aplicar los tres filtros con un kernel agresivo de 7x7
+ksize = 7
+
+# Filtro 1: Media (Box Filter / Promedio simple)
+blur_media = cv2.blur(imagen_ruidosa, (ksize, ksize))
+
+# Filtro 2: Gaussiano (Pesos decrecientes según campana de Gauss)
+blur_gauss = cv2.GaussianBlur(imagen_ruidosa, (ksize, ksize), 0)
+
+# Filtro 3: Mediana (Filtro no lineal por ordenamiento de rango)
+blur_mediana = cv2.medianBlur(imagen_ruidosa, ksize)
+
+# 3. Mostrar comparativa visual
+fig, axes = plt.subplots(1, 4, figsize=(18, 5))
+
+axes[0].imshow(imagen_ruidosa, cmap='gray')
+axes[0].set_title("1. Con Ruido Sal y Pimienta", fontweight='bold')
+axes[0].axis('off')
+
+axes[1].imshow(blur_media, cmap='gray')
+axes[1].set_title(f"2. Filtro Media ({ksize}x{ksize})\nManchas Grises", fontweight='bold')
+axes[1].axis('off')
+
+axes[2].imshow(blur_gauss, cmap='gray')
+axes[2].set_title(f"3. Filtro Gaussiano ({ksize}x{ksize})\nPreserva Picos", fontweight='bold')
+axes[2].axis('off')
+
+axes[3].imshow(blur_mediana, cmap='gray')
+axes[3].set_title(f"4. Filtro Mediana ({ksize}x{ksize})\nLimpieza Perfecta", fontweight='bold')
+axes[3].axis('off')
+
+plt.tight_layout()
+plt.show()
+
+
+#Los valores espurios de ruido impulsivo (0 y 255) quedan relegados automáticamente a los extremos absoluto izquierdo y derecho de la lista ordenada.
+#Siempre que el ruido no cubra más del 50% del área del kernel, el valor seleccionado en la posición central será un píxel representativo del fondo o del objeto
+#real, descartando matemáticamente los valores atípicos sin dejar rastro de manchas intermedias.  
