@@ -1,1 +1,88 @@
+TALLER ANALITICO
+1. Aplicación analítica de la umbralización binaria con T = 135
 
+FILA 0: I(0,0) = 80 < 135 => 0
+I(0,1) = 120 < 135 => 0
+I(0,2) = 140 > 135 => 255
+
+FILA 1: I(1,0) = 90 < 135 => 0
+I(1,1) = 200 > 135 => 255
+I(1,2) = 210 > 135 => 255
+
+FILO 2 = I(2,0) = 50 < 135 => 0
+I(2,1) = 130 < 135 => 0
+I(2,2) = 250 > 135 => 255
+
+MATRIZ (3X3): |0   0   255|
+              |0  255  255|
+              |0   0   255|
+
+2. Análisis del error al fijar T = 135 cuando el objetivo era aislar valores > 100
+Error de umbralización:Al elegir T = 135 en lugar de T = 101 (o 100), se genera un error de falsos negativos (sub-segmentación) para todos los píxeles 
+cuyo valor caía en el intervalo [101, 134].  En la matriz, los píxeles en las posiciones (0, 1) = 120 y (2, 1) = 130 
+cumplían con el criterio de pertenecer al objeto (> 100), pero el umbral de 135 los mandó erróneamente a 0 (fondo negro).  
+
+//--------
+TALLER DE LABORATORIO
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Cargar imagen en escala de grises
+ruta = 'documento.jpg'
+
+try:
+    imagen_gris = cv2.imread(ruta, cv2.IMREAD_GRAYSCALE)
+    if imagen_gris is None:
+        raise FileNotFoundError
+except Exception:
+    print("Imagen no encontrada localmente. Generando tensor de prueba con ruido...")
+    # Creamos un fondo con iluminación degradada y un objeto en el centro
+    imagen_gris = np.full((250, 250), 40, dtype=np.uint8)
+    imagen_gris[70:180, 70:180] = 180  # Objeto principal
+    # Añadimos gradiente de luz
+    degradado = np.tile(np.linspace(0, 50, 250, dtype=np.uint8), (250, 1))
+    imagen_gris = cv2.add(imagen_gris, degradado)
+
+# 2. Umbral estático bajo para inducir ruido intencional (puntos blancos en fondo)
+T_estatico = 85
+_, imagen_binaria = cv2.threshold(imagen_gris, T_estatico, 255, cv2.THRESH_BINARY)
+
+# Ruido de sal adicional aleatorio en el fondo
+np.random.seed(42)
+ruido_sal = np.random.rand(*imagen_binaria.shape) < 0.02
+imagen_binaria[ruido_sal] = 255
+
+# 3. Construir Elemento Estructurante (Kernel de 3x3)
+kernel = np.ones((3, 3), np.uint8)
+
+# 4. Operación de Apertura (Erosión seguida de Dilatación)
+# Se puede hacer secuencial o con cv2.morphologyEx(imagen_binaria, cv2.MORPH_OPEN, kernel)
+erosion = cv2.erode(imagen_binaria, kernel, iterations=1)
+apertura = cv2.dilate(erosion, kernel, iterations=1)
+
+# 5. Operación de Cierre (Dilatación seguida de Erosión)
+# Se puede hacer secuencial o con cv2.morphologyEx(imagen_binaria, cv2.MORPH_CLOSE, kernel)
+dilatacion = cv2.dilate(imagen_binaria, kernel, iterations=1)
+cierre = cv2.erode(dilatacion, kernel, iterations=1)
+
+# 6. Mostrar las 3 ventanas para comparar
+plt.figure(figsize=(15, 5))
+
+plt.subplot(1, 3, 1)
+plt.imshow(imagen_binaria, cmap='gray')
+plt.title("1. Binarizada (Con Ruido)", fontweight='bold')
+plt.axis('off')
+
+plt.subplot(1, 3, 2)
+plt.imshow(apertura, cmap='gray')
+plt.title("2. Apertura (Erosión + Dilatación)\nLimpia Ruido Exterior", fontweight='bold')
+plt.axis('off')
+
+plt.subplot(1, 3, 3)
+plt.imshow(cierre, cmap='gray')
+plt.title("3. Cierre (Dilatación + Erosión)\nSella Huecos Internos", fontweight='bold')
+plt.axis('off')
+
+plt.tight_layout()
+plt.show()
