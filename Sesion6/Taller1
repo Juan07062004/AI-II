@@ -1,1 +1,100 @@
+TALLER ANALITICO
+1. 
+//--------------------------
+TALLER DE LABORATORIO 
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
 
+# 1. Cargar imagen de prueba
+ruta_imagen = 'monedas.jpg'
+imagen_color = cv2.imread(ruta_imagen)
+
+if imagen_color is None:
+    # Generar imagen sintética si no hay archivo local
+    imagen_color = np.full((400, 600, 3), 40, dtype=np.uint8)
+    # Monedas grandes (Radio 50 y 45)
+    cv2.circle(imagen_color, (150, 150), 50, (200, 200, 200), -1)
+    cv2.circle(imagen_color, (450, 150), 45, (200, 200, 200), -1)
+    # Monedas pequeñas (Radio 25 y 22)
+    cv2.circle(imagen_color, (200, 300), 25, (200, 200, 200), -1)
+    cv2.circle(imagen_color, (380, 300), 22, (200, 200, 200), -1)
+
+# 2. Paso 1 del Pipeline: Conversión a escala de grises
+gris = cv2.cvtColor(imagen_color, cv2.COLOR_BGR2GRAY)
+
+# Paso 2 del Pipeline: Umbralización automática con Otsu
+_, binaria = cv2.threshold(gris, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+# Paso 3 del Pipeline: Limpieza Morfológica (Apertura: elimina ruido exterior)
+kernel = np.ones((3, 3), np.uint8)
+limpia = cv2.morphologyEx(binaria, cv2.MORPH_OPEN, kernel, iterations=2)
+
+# Paso 4 del Pipeline: Detección de Contornos externos
+contornos, _ = cv2.findContours(limpia, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# 3 y 4. Lógica empresarial de clasificación por Área
+# Umbral discriminador: 3000 píxeles
+UMBRAL_AREA = 3000
+
+print("=" * 50)
+print(" REPORTE DE EXTRACCIÓN Y CLASIFICACIÓN DE FORMAS")
+print("=" * 50)
+
+imagen_resultado = imagen_color.copy()
+
+contador = 1
+for cnt in contornos:
+    area = cv2.contourArea(cnt)
+    
+    # Descartar artefactos residuales mínimos
+    if area < 100:
+        continue
+        
+    x, y, w, h = cv2.boundingRect(cnt)
+    
+    # Clasificación por tamaño
+    if area >= UMBRAL_AREA:
+        tipo = "GRANDE"
+        # BGR: Azul = (255, 0, 0)
+        color_caja = (255, 0, 0)
+    else:
+        tipo = "PEQUEÑO"
+        # BGR: Rojo = (0, 0, 255)
+        color_caja = (0, 0, 255)
+        
+    print(f"Objeto #{contador}: Área = {area:,.2f} px | Clasificación: {tipo} | BBox: (x={x}, y={y}, w={w}, h={h})")
+    
+    # Dibujar Bounding Box
+    cv2.rectangle(imagen_resultado, (x, y), (x + w, y + h), color_caja, 2)
+    
+    # Dibujar Centroide
+    M = cv2.moments(cnt)
+    if M["m00"] != 0:
+        cx = int(M["m10"] / M["m00"])
+        cy = int(M["m01"] / M["m00"])
+        cv2.circle(imagen_resultado, (cx, cy), 4, (0, 255, 0), -1)
+        
+    cv2.putText(imagen_resultado, f"{tipo} ({int(area)})", (x, y - 8),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.45, color_caja, 1)
+    
+    contador += 1
+
+print("=" * 50)
+
+# Visualización comparativa
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1)
+plt.imshow(limpia, cmap='gray')
+plt.title("Pipeline: Máscara Binarizada y Limpia", fontweight='bold')
+plt.axis('off')
+
+plt.subplot(1, 2, 2)
+# Convertir BGR a RGB para visualizar correctamente en Matplotlib
+plt.imshow(cv2.cvtColor(imagen_resultado, cv2.COLOR_BGR2RGB))
+plt.title("Clasificador: Azul (Grande) vs Rojo (Pequeño)", fontweight='bold')
+plt.axis('off')
+
+plt.tight_layout()
+plt.show()
