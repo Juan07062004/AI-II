@@ -1,1 +1,38 @@
+TALLER ANALITICO
 
+//-----------------------------------------------------------------
+TALLER DE LABORATORIO
+import numpy as np
+
+# 1. Función de Activación Escalón
+def funcion_escalon(z):
+    return 1 if z >= 0 else 0
+
+# 2. Estructura de la Neurona Perceptrón
+def perceptron(X, W, b):
+    # Producto punto vectorial más sesgo
+    Z = np.dot(X, W) + b
+    return funcion_escalon(Z)
+
+# 3. Pesos y Sesgo hackeados manualmente para la compuerta OR
+pesos = np.array([0.5, 0.5])
+sesgo = -0.3
+
+# 4. Tabla de combinaciones de entrada posibles
+entradas_posibles = [
+    np.array([0, 0]),
+    np.array([1, 0]),
+    np.array([0, 1]),
+    np.array([1, 1])
+]
+
+print("=" * 45)
+print("  COMPROBACIÓN DEL PERCEPTRÓN - COMPUERTA OR")
+print("=" * 45)
+print(f"Parámetros configurados: W = {pesos}, b = {sesgo}\n")
+
+for x in entradas_posibles:
+    salida = perceptron(x, pesos, sesgo)
+    print(f"Entrada: {x.tolist()}  -->  Salida Neurona: {salida}")
+
+print("=" * 45)
