@@ -1,1 +1,60 @@
+TALLER ANALITICO
 
+//----------------------------------------------------------------------------
+TALLER DE LABORATORIO
+import numpy as np
+
+# Función de Activación: Sigmoide (acota cualquier valor real al rango (0, 1))
+def sigmoide(x):
+    return 1 / (1 + np.exp(-x))
+
+# -------------------------------------------------------------
+# RETO DIMENSIONAL: 2 CLIENTES SIMULTÁNEOS (MATRIZ BATCH 2x3)
+# Fila 0 -> Cliente 1: [0.5, 0.8, 0.2]
+# Fila 1 -> Cliente 2: [0.1, 0.9, 0.9]
+# -------------------------------------------------------------
+X = np.array([
+    [0.5, 0.8, 0.2],
+    [0.1, 0.9, 0.9]
+])
+
+# PARÁMETROS CAPA OCULTA (4 Neuronas)
+# Matriz W1 de forma (3 entradas x 4 neuronas)
+W1 = np.array([
+    [ 0.1,  0.2,  0.3,  0.4],
+    [-0.5,  0.6,  0.7, -0.8],
+    [ 0.9, -0.1,  0.2,  0.3]
+])
+# Vector de sesgo b1: (4 sesgos)
+b1 = np.array([0.1, 0.2, 0.3, 0.4])
+
+# PROCESO FORWARD: CAPA OCULTA
+# (2x3) dot (3x4) + (4,) -> (2x4) gracias al broadcasting de NumPy
+Z1 = np.dot(X, W1) + b1
+A1 = sigmoide(Z1)
+
+# PARÁMETROS CAPA DE SALIDA (1 Neurona)
+# Matriz W2 adaptada a vector columna (4x1) para producto matricial limpio
+W2 = np.array([[0.5], [0.6], [0.7], [0.8]])
+b2 = np.array([-0.1])
+
+# PROCESO FORWARD: CAPA DE SALIDA
+# (2x4) dot (4x1) + (1,) -> (2x1)
+Z2 = np.dot(A1, W2) + b2
+Salida_Final = sigmoide(Z2)
+
+# PRESENTACIÓN Y ANÁLISIS DE RESULTADOS
+print("=" * 60)
+print("1. ENTRADAS EN LOTE (2 CLIENTES):")
+print(X)
+
+print("\n2. COMBINACIÓN LINEAL CAPA OCULTA (Z1 sin activar):")
+print(Z1)
+
+print("\n3. ACTIVACIÓN CAPA OCULTA (A1 - Sigmoide aplicada):")
+print(A1)
+
+print("\n4. PREDICCIONES FINALES (Probabilidad de Aprobación):")
+for i, prob in enumerate(Salida_Final):
+    print(f"   Cliente #{i+1}: {prob[0]:.4f} ({prob[0]*100:.2f}%)")
+print("=" * 60)
