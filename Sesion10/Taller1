@@ -1,1 +1,72 @@
+TALLER ANALITICO
 
+//------------------------------------------------------------------
+TALLER DE LABORATORIO
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.svm import SVC
+
+# 1. Dataset Original
+X = np.array([[2, 2], [3, 3], [4, 2], [6, 6], [7, 8], [8, 7]])
+Y = np.array([0, 0, 0, 1, 1, 1])
+
+# Modelo lineal inicial
+svm_lineal = SVC(kernel='linear')
+svm_lineal.fit(X, Y)
+
+print("=" * 55)
+print("1. VECTORES DE SOPORTE DESCUBIERTOS (MODELO LINEAL):")
+print(svm_lineal.support_vectors_)
+print("=" * 55)
+
+# 2. Paso 2: Introducir punto que rompe la separabilidad lineal
+# Punto [5, 5] asignado a Clase A (0), ubicado en medio de la diagonal
+X_modificado = np.vstack([X, [5, 5]])
+Y_modificado = np.append(Y, 0)
+
+# 3. Paso 3: Entrenar modelo lineal forzado
+svm_lineal_forzado = SVC(kernel='linear')
+svm_lineal_forzado.fit(X_modificado, Y_modificado)
+
+# 4. Paso 4: Entrenar modelo con Kernel RBF (No lineal)
+svm_rbf = SVC(kernel='rbf', C=10.0, gamma=0.5)
+svm_rbf.fit(X_modificado, Y_modificado)
+
+# Función para graficar la frontera de decisión y márgenes
+def graficar_svm(modelo, X_data, y_data, ax, titulo):
+    h = 0.05
+    x_min, x_max = 0, 10
+    y_min, y_max = 0, 10
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    
+    Z = modelo.decision_function(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    
+    ax.contourf(xx, yy, Z > 0, alpha=0.2, cmap='coolwarm')
+    ax.contour(xx, yy, Z, colors='k', levels=[-1, 0, 1], alpha=0.7, linestyles=['--', '-', '--'])
+    
+    ax.scatter(X_data[y_data == 0, 0], X_data[y_data == 0, 1], color='blue', s=70, label='Clase A (0)', edgecolors='k')
+    ax.scatter(X_data[y_data == 1, 0], X_data[y_data == 1, 1], color='red', s=70, label='Clase B (1)', marker='x')
+    
+    # Destacar vectores de soporte
+    sv = modelo.support_vectors_
+    ax.scatter(sv[:, 0], sv[:, 1], s=160, facecolors='none', edgecolors='green', linewidths=2, label='Vectores Soporte')
+    
+    ax.set_title(titulo, fontweight='bold', fontsize=11)
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.grid(True, linestyle=':', alpha=0.6)
+    ax.legend(loc='lower right', fontsize=8)
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+graficar_svm(svm_lineal_forzado, X_modificado, Y_modificado, axes[0], "SVM Lineal Forzado (Falla con [5,5])")
+graficar_svm(svm_rbf, X_modificado, Y_modificado, axes[1], "SVM con Kernel RBF (Aisla la anomalía)")
+
+plt.tight_layout()
+plt.show()
+
+# Comparación de predicción para el punto nuevo [5, 5]
+pred_lineal = svm_lineal_forzado.predict([[5, 5]])
+pred_rbf = svm_rbf.predict([[5, 5]])
+print(f"Predicción en [5,5] con Kernel Lineal : {pred_lineal[0]} (Puede equivocarse)")
+print(f"Predicción en [5,5] con Kernel RBF    : {pred_rbf[0]} (Clasificado correctamente)")
