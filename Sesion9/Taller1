@@ -1,5 +1,22 @@
 TALLER ANALITICO
+1. 1. Distancia de P(30, 40) a A(20, 30): casi = 14.142
+2. Distancia de P(30, 40) a B(40, 50): casi = 14.142
+3. Distancia de P(30, 40) a C(35, 45): casi = 7.071
 
+Esto teniendo en cuenta la formula de raiz cuadrada 
+
+2. Clasificación con K = 1   
+Para K = 1, se evalúa únicamente el vecino más cercano a P.   
+El vecino con menor distancia es el Punto C (d casi = 7.071)  
+Como C pertenece a la clase COMPRA, el nuevo cliente se clasifica como: COMPRA
+
+3. Clasificación con K = 3 y análisis de cambio en la decisión
+Para K = 3, se toman en cuenta los 3 vecinos más cercanos (C, A y B):  
+C: COMPRA  
+A: NO COMPRA   
+B: COMPRA   
+Votación por mayoría: Votos COMPRA = 2 vs Votos NO COMPRA = 1
+Resultado: El nuevo cliente se clasifica como COMPRA.      
 //----------------------------------------------------------------------
 TALLER DE LABORATORIO
 import numpy as np
