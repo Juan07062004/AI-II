@@ -1,5 +1,25 @@
 TALLER ANALITICO
 
+1. DATOS: Entradas: Ingresos (X1 = 50), Deudas (X2 = 20) 
+Pesos: W1 = 0.8, W2 = -0.5
+Sesgo (bias): b = -10
+
+La ecuación de combinación lineal del perceptrón es:
+   Z = (X1 * W1) + (X2 * W2) + b   
+Sustituyendo los valores numéricos:
+   Z = (50 * 0.8) + (20 * (-0.5)) + (-10)
+   Z = 40 - 10 - 10
+   Z = 20
+Resultado: El valor neto de activación lineal es Z = 20
+
+2. Como Z = 20 >= 0, la función evalúa directamente a 1.  
+Veredicto: Sí, la neurona sí disparará el valor 1, aprobando el crédito del cliente.
+
+3. Impacto inhibidor: En un perceptrón, un peso positivo actúa como una señal excitatoria (aumenta el valor de Z), mientras que un peso negativo actúa como una señal
+inhibitoria (reduce el valor de Z).
+Sentido de negocio: La característica X2 corresponde a las deudas del solicitante. A mayor nivel de endeudamiento, mayor es el riesgo de impago para la entidad
+financiera. Por ende, las deudas deben penalizar y restar puntaje al cliente, alejándolo del umbral de aprobación (Z >= 0).
+Multiplicar las deudas por un factor negativo (-0.5) garantiza matemáticamente que tener más deuda disminuya la probabilidad de que el crédito sea aprobado.  
 //-----------------------------------------------------------------
 TALLER DE LABORATORIO
 import numpy as np
