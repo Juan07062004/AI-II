@@ -1,5 +1,10 @@
 TALLER ANALITICO
 
+1. El segmento que une es (3,3) y (6,6) y su pendiente seria igual m = 1.
+En ese caso su punto medio seria (4.5,4.5)
+2. X
+3. La poscicion de la linea no cambiaria.
+
 //------------------------------------------------------------------
 TALLER DE LABORATORIO
 import numpy as np
